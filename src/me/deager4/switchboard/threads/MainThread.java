@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import me.deager4.switchboard.SwitchBoard;
+import me.deager4.switchboard.database.Client;
 
 public class MainThread extends Thread
 {
@@ -40,19 +41,42 @@ public class MainThread extends Thread
 					StringTokenizer a = new StringTokenizer(data, "#%#");
 					if(a.countTokens() == 0)
 					{
-						System.out.println("Server received unauthorized empty packet from " + packetAddress.getHostAddress());
+						System.out.println("[main thread]:Server received unauthorized empty packet from " + packetAddress.getHostAddress());
 					}
 					else
 					{
 						String packetType = a.nextToken();
 						if(packetType.equals("auth"))
 						{
-							//the format of the auth packet will be password, listening port, and name
-							//if the password is correct, and everything checks out, there will be 
+							if(a.countTokens() == 0)
+							{
+								System.out.println("[main thread]:Server received empty auth packet from " + packetAddress.getHostAddress());
+							}
+							else
+							{
+								String password = a.nextToken();
+								if(!password.equals(SwitchBoard.getPassword()))
+								{
+									String dataToSend = "auth-deny#%#Incorrect Password Knave!!";
+									SenderThread senderThread = new SenderThread(packet.getAddress(), packet.getPort(), dataToSend);
+									senderThread.start();
+								}
+								else
+								{
+									int port = Integer.parseInt(a.nextToken());
+									String name = a.nextToken();
+									Client client = new Client(packet.getAddress(), port, name);
+									System.out.println("[main thread]:Server received propper authentication code from " + packet.getAddress() + ", Adding to client list...");
+									SwitchBoard.getDatabase().addClient(client);
+									String dataToSend = "auth-success#%#";
+									SenderThread senderThread = new SenderThread(SwitchBoard.getDatabase().isClientOnline(packet.getAddress()), dataToSend);
+									senderThread.start();
+								}
+							}
 						}
 						else
 						{
-							System.out.println("Server received unauthorized packet from " + packetAddress.getHostAddress());
+							System.out.println("[main thread]:Server received unauthorized packet from " + packetAddress.getHostAddress());
 						}
 						
 					}
@@ -64,7 +88,7 @@ public class MainThread extends Thread
 					StringTokenizer a = new StringTokenizer(data, "#%#");
 					if(a.countTokens() == 0)
 					{
-						System.out.println("Server received empty packet from " + packetAddress.getHostAddress());
+						System.out.println("[main thread]:Server received empty packet from " + packetAddress.getHostAddress());
 					}
 					else
 					{
@@ -91,7 +115,7 @@ public class MainThread extends Thread
 							}
 							catch (UnknownHostException e)
 							{
-								System.out.println("Server could not find address " + target);
+								System.out.println("[main thread]:Server could not find address " + target);
 							}
 							
 						}
@@ -99,6 +123,7 @@ public class MainThread extends Thread
 						{
 							if(SwitchBoard.getDatabase().isClientOnline(packetAddress) != null)
 							{
+								System.out.println("[main thread]:Server received redundant login request from " + packet.getAddress().toString());
 								
 							}
 							else
@@ -110,7 +135,7 @@ public class MainThread extends Thread
 						{
 							if(SwitchBoard.getDatabase().isClientOnline(packetAddress) == null)
 							{
-								
+								System.out.println("[main thread]:Server received a What the FUck packet, something is horribly wrong!!!");
 							}
 							else
 							{
