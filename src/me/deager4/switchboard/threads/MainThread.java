@@ -69,7 +69,7 @@ public class MainThread extends Thread
 									System.out.println("[main thread]:Server received propper authentication code from " + packet.getAddress() + ", Adding to client list...");
 									SwitchBoard.getDatabase().addClient(client);
 									String dataToSend = "auth-success#%#";
-									SenderThread senderThread = new SenderThread(SwitchBoard.getDatabase().isClientOnline(packet.getAddress()), dataToSend);
+									SenderThread senderThread = new SenderThread(SwitchBoard.getDatabase().getOnlineClient(packet.getAddress()), dataToSend);
 									senderThread.start();
 								}
 							}
@@ -100,16 +100,16 @@ public class MainThread extends Thread
 							try
 							{
 								InetAddress targetAddress = InetAddress.getByName(target);
-								if(SwitchBoard.getDatabase().isClientOnline(targetAddress) == null)
+								if(SwitchBoard.getDatabase().getOnlineClient(targetAddress) == null)
 								{
 									String dataToSend = "err#%#There is no client online with the address " + target;
-									SenderThread senderThread = new SenderThread(SwitchBoard.getDatabase().isClientOnline(packetAddress), dataToSend);
+									SenderThread senderThread = new SenderThread(SwitchBoard.getDatabase().getOnlineClient(packetAddress), dataToSend);
 									senderThread.start();
 								}
 								else
 								{
 									String dataToSend = "msg#%#" + a.nextToken();
-									SenderThread senderThread = new SenderThread(SwitchBoard.getDatabase().isClientOnline(targetAddress), dataToSend);
+									SenderThread senderThread = new SenderThread(SwitchBoard.getDatabase().getOnlineClient(targetAddress), dataToSend);
 									senderThread.start();
 								}
 							}
@@ -121,7 +121,7 @@ public class MainThread extends Thread
 						}
 						else if(packetType.equals("login"))
 						{
-							if(SwitchBoard.getDatabase().isClientOnline(packetAddress) != null)
+							if(SwitchBoard.getDatabase().getOnlineClient(packetAddress) != null)
 							{
 								System.out.println("[main thread]:Server received redundant login request from " + packet.getAddress().toString());
 								
@@ -133,7 +133,7 @@ public class MainThread extends Thread
 						}
 						else if(packetType.equals("logout"))
 						{
-							if(SwitchBoard.getDatabase().isClientOnline(packetAddress) == null)
+							if(SwitchBoard.getDatabase().getOnlineClient(packetAddress) == null)
 							{
 								System.out.println("[main thread]:Server received a What the FUck packet, something is horribly wrong!!!");
 							}
