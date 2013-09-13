@@ -4,7 +4,7 @@ import java.net.InetAddress;
 import java.util.HashMap;
 
 /**
- * The Database
+ * The Database for the entire server. Contains all of the maps, etc.
  * @author deager4
  *
  */
@@ -20,7 +20,9 @@ public class Database
 	 */
 	private HashMap<InetAddress, Client> approvedClientMap;
 	
-	
+	/**
+	 * Constructor
+	 */
 	public Database()
 	{
 		onlineClientMap = new HashMap<InetAddress, Client>();

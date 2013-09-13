@@ -5,14 +5,33 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 
+/**
+ * Opens a socket that listens for Packets. Passes all packets, regardless of content
+ * @author deager4
+ *
+ */
 public class ListenerThread extends Thread
 {
+	/**
+	 * the port that the thread is listening on
+	 */
 	private int port;
 	
+	/**
+	 * the {@link DatagramSocket} that the server is using to listen for packets
+	 */
 	private DatagramSocket socket;
 	
+	/**
+	 * The run controller for the thread
+	 */
 	private boolean isRunning;
 	
+	
+	/**
+	 * Creates a Listening Thread
+	 * @param port int
+	 */
 	public ListenerThread(int port)
 	{
 		super("Listener Thread");
@@ -25,6 +44,9 @@ public class ListenerThread extends Thread
 		}
 	}
 	
+	/**
+	 * runs the thread
+	 */
 	public void run()
 	{
 		isRunning = true;
@@ -39,19 +61,24 @@ public class ListenerThread extends Thread
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
 		}
 	}
 	
+	/**
+	 * Stops the thread. Also closes {@link ListenerThread#socket}
+	 */
 	public void terminate()
 	{
-		isRunning = false;
+		isRunning = false; //stops while loop
 			socket.close();
 		
 	}
 	
 	
-	
+	/**
+	 * Passes a packet to the packet pool in the Main Thread
+	 * @param packet {@link DatagramPacket}
+	 */
 	private void passPacketToMain(DatagramPacket packet)
 	{
 		MainThread.addPacketToPool(packet);

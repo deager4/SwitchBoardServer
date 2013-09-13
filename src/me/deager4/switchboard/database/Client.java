@@ -1,7 +1,11 @@
 package me.deager4.switchboard.database;
 
 import java.net.InetAddress;
-
+/**
+ * A Client
+ * @author deager4
+ *
+ */
 public class Client
 {
 	/**
